@@ -1,15 +1,16 @@
-# Contribution [#]: [Issue Title]
+# Contribution [#]: CLI: add geojson to the collect command's --format option
 
 **Contribution Number:** [1 / 2 / 3]  
-**Student:** [Your Name]  
-**Issue:** [GitHub issue link]  
-**Status:** [Phase I / Phase II / Phase III / Phase IV] [In Progress / Complete]
+**Student:** Safia Shaik 
+**Issue:** https://github.com/Rekin226/aquascope/issues/7
+**Status:** Phase I Complete
 
 ---
 
 ## Why I Chose This Issue
 
-[1-2 paragraphs explaining why this issue interests you, how it matches your skills/learning goals, what you hope to learn]
+I chose the AquaScope --format CLI enhancement (#7) because it fits my background while still pushing me somewhere new. I work mostly in backend and DevOps and Python is one of my strongest languages, so the stack here is a Typer CLI, pandas, and JSON/CSV/GeoJSON. Output is familiar enough that I can get productive fast, and the issue is well scoped: add a --format option and an --output flag, route the output through three format paths, and cover it with tests and docs. 
+It also solves a real problem for actual users, researchers who just want their data as a CSV or GeoJSON without writing a script to convert it. Mostly, though, I have little open-source experience, and I want to use this to go through the full contribution loop for the first time like claiming an issue, working with a maintainer, and getting a PR reviewed and merged, while sharpening my testing and edge-case handling along the way.
 
 ---
 
