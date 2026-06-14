@@ -3,7 +3,7 @@
 **Contribution Number:** 1 
 **Student:** Safia Shaik 
 **Issue:** https://github.com/Rekin226/aquascope/issues/7
-**Status:** Phase I Complete
+**Status:** Phase II Complete
 
 ---
 
@@ -60,19 +60,22 @@ I ran into two issues while setting up the project locally.
 
 ### Reproduction Evidence
 
-- **Commit showing reproduction:** [Link to commit in your fork]
+- **Commit showing reproduction:** [Link to commit in your fork] "no code change needed to reproduce; reproduction is via CLI commands."
 - **Screenshots/logs:**
 **1. Default JSON output works.**
   Running `aquascope collect --source gemstat` collects the data and saves it as a JSON file under `data/raw/`.
-<img width="1470" height="956" alt="Screenshot 2026-06-13 at 8 27 44 PM" src="https://github.com/user-attachments/assets/b105be8f-60ff-489b-8dc5-8f68274009da" />
+  
+<img width="1470" height="956" alt="Screenshot showing JSON file output" src="https://github.com/user-attachments/assets/b105be8f-60ff-489b-8dc5-8f68274009da" />
 
 **2. CSV format works.**
 Running `aquascope collect --source gemstat --format=csv` saves the data as a CSV file.
-<img width="1470" height="956" alt="Screenshot 2026-06-13 at 8 28 25 PM" src="https://github.com/user-attachments/assets/88ca2aef-743b-4ff3-865d-ef9af283ee83" />
+
+<img width="1470" height="956" alt="Screenshot showing CSV file output" src="https://github.com/user-attachments/assets/88ca2aef-743b-4ff3-865d-ef9af283ee83" />
 
 **3. GeoJSON format fails (this is the issue).**
 Running `aquascope collect --source gemstat --format=geojson` fails with `invalid choice: 'geojson' (choose from 'json', 'csv')`, confirming GeoJSON is not yet a supported format.
-<img width="1470" height="956" alt="Screenshot 2026-06-13 at 8 29 11 PM" src="https://github.com/user-attachments/assets/96823ccb-5ed1-4a5b-b4ec-c9d90c341389" />
+
+<img width="1470" height="956" alt="Screenshot showing error for geoJSON file type" src="https://github.com/user-attachments/assets/96823ccb-5ed1-4a5b-b4ec-c9d90c341389" />
 
 
 - **My findings:** The --format option only accepts json and csv. Passing geojson fails at the argparse validation stage, before any data is written, confirming the format was never added. The GeoJSON serializer (export_geojson) already exists in storage.py and is tested; the only missing piece is routing fmt="geojson" to it inside save_records() and adding geojson to the CLI's --format choices.
@@ -96,7 +99,7 @@ Using UMPIRE framework (adapted):
 
 **Match:** The patterns and even the core logic already exist. aquascope/cli.py defines --format on the collect subparser with the choices ["json", "csv"]. aquascope/utils/storage.py has save_records() (around line 24) with an if fmt == "json" / elif fmt == "csv" / else: raise ValueError structure. Crucially, the same file already has a working, tested export_geojson(records, path) helper (around line 136) that builds the FeatureCollection and already emits "geometry": null for records without a location. The test file tests/test_utils/test_export_formats.py already covers export_geojson directly and has existing save_records(..., fmt="csv") tests I can mirror.
 
-**Plan:** [Step-by-step implementation plan]
+**Plan:**
 1. In aquascope/utils/storage.py, add a geojson branch to save_records(). When fmt == "geojson", build the .geojson filepath and call the existing export_geojson() helper, returning the written path. I will not reimplement the GeoJSON logic, since the helper already handles it (including the no-location case).
 2. In aquascope/cli.py, add "geojson" to the choices=[...] list on the collect subparser's --format argument, so it's accepted and appears in --help.
 3. In tests/test_utils/test_export_formats.py, add a test for save_records(records, fmt="geojson") following the existing fmt="csv" test pattern, confirming it returns a valid .geojson path.
