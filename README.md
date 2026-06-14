@@ -22,7 +22,7 @@ The aquascope collect command can only save data in 2 formats: JSON and CSV. It 
 
 ### Expected Behavior
 
-Running aquascope collect --source gemstat --format=geojson should save the collected data as a valid GeoJSON file. Each record with location data should become a map point (a GeoJSON Point), and records without coordinates should still be saved with their geometry set to null instead of causing an error. The geojson option should also show up when you run aquascope collect --help.
+Running `aquascope collect --source gemstat --format=geojson` should save the collected data as a valid GeoJSON file. Each record with location data should become a map point (a GeoJSON Point), and records without coordinates should still be saved with their geometry set to null instead of causing an error. The geojson option should also show up when you run aquascope collect --help.
 
 ### Current Behavior
 
@@ -49,13 +49,13 @@ I ran into two issues while setting up the project locally.
 
 1. Fork the AquaScope repository to your own GitHub account.
 2. Clone your fork locally and cd into the project folder.
-3. Create and activate a virtual environment: python3 -m venv .venv then source .venv/bin/activate.
+3. Create and activate a virtual environment: `python3 -m venv .venv` then `source .venv/bin/activate`.
 4. Install the dependencies: pip install -e ".[all,dev]".
-5. Run aquascope collect --source gemstat. This collects data and saves it as a JSON file under data/raw/.
-6. Run aquascope collect --source gemstat --format=csv. This works and saves a CSV file.
-7. Run aquascope collect --source gemstat --format=geojson. This fails with the error invalid choice: 'geojson' (choose from 'json', 'csv'), which confirms the issue: GeoJSON is not a supported output format.
+5. Run `aquascope collect --source gemstat`. This collects data and saves it as a JSON file under data/raw/.
+6. Run `aquascope collect --source gemstat --format=csv`. This works and saves a CSV file.
+7. Run `aquascope collect --source gemstat --format=geojson`. This fails with the error invalid choice: 'geojson' (choose from 'json', 'csv'), which confirms the issue: GeoJSON is not a supported output format.
 
-- Note: The issue's acceptance criteria use aquascope collect --source usgs --format geojson to verify the fix. The gap is identical across sources because it's in the shared output path, so gemstat demonstrates it equally well; usgs is used for final verification in Phase III.
+- Note: The issue's acceptance criteria use `aquascope collect --source usgs --format geojson` to verify the fix. The gap is identical across sources because it's in the shared output path, so gemstat demonstrates it equally well; usgs is used for final verification in Phase III.
 
 
 ### Reproduction Evidence
