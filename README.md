@@ -61,7 +61,20 @@ I ran into two issues while setting up the project locally.
 ### Reproduction Evidence
 
 - **Commit showing reproduction:** [Link to commit in your fork]
-- **Screenshots/logs:** [If applicable]
+- **Screenshots/logs:**
+**1. Default JSON output works.**
+  Running `aquascope collect --source gemstat` collects the data and saves it as a JSON file under `data/raw/`.
+<img width="1470" height="956" alt="Screenshot 2026-06-13 at 8 27 44 PM" src="https://github.com/user-attachments/assets/b105be8f-60ff-489b-8dc5-8f68274009da" />
+
+**2. CSV format works.**
+Running `aquascope collect --source gemstat --format=csv` saves the data as a CSV file.
+<img width="1470" height="956" alt="Screenshot 2026-06-13 at 8 28 25 PM" src="https://github.com/user-attachments/assets/88ca2aef-743b-4ff3-865d-ef9af283ee83" />
+
+**3. GeoJSON format fails (this is the issue).**
+Running `aquascope collect --source gemstat --format=geojson` fails with `invalid choice: 'geojson' (choose from 'json', 'csv')`, confirming GeoJSON is not yet a supported format.
+<img width="1470" height="956" alt="Screenshot 2026-06-13 at 8 29 11 PM" src="https://github.com/user-attachments/assets/96823ccb-5ed1-4a5b-b4ec-c9d90c341389" />
+
+
 - **My findings:** The --format option only accepts json and csv. Passing geojson fails at the argparse validation stage, before any data is written, confirming the format was never added. The GeoJSON serializer (export_geojson) already exists in storage.py and is tested; the only missing piece is routing fmt="geojson" to it inside save_records() and adding geojson to the CLI's --format choices.
 ---
 
