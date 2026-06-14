@@ -60,6 +60,7 @@ I ran into two issues while setting up the project locally.
 
 ### Reproduction Evidence
 
+- **Branch Link:** https://github.com/safiashaik04/aquascope/tree/fix-issue-geoJSON-format
 - **Commit showing reproduction:** [Link to commit in your fork] "no code change needed to reproduce; reproduction is via CLI commands."
 - **Screenshots/logs:**
 **1. Default JSON output works.**
@@ -85,11 +86,11 @@ Running `aquascope collect --source gemstat --format=geojson` fails with `invali
 
 ### Analysis
 
-[Your analysis of the root cause - what's causing the issue?]
+GeoJSON isn't supported simply because it was never wired in. The --format option in cli.py only allows json and csv, so passing geojson gets rejected right away. The GeoJSON logic itself already exists and is tested (export_geojson() in storage.py); the save_records() function just doesn't have a branch that uses it.
 
 ### Proposed Solution
 
-[High-level description of your fix approach]
+Add geojson to the allowed --format choices in cli.py, and add a branch in save_records() that routes GeoJSON requests to the existing export_geojson() helper. Then add a test for it. No new GeoJSON logic needs to be written.
 
 ### Implementation Plan
 
