@@ -3,7 +3,7 @@
 **Contribution Number:** 1 
 **Student:** Safia Shaik 
 **Issue:** https://github.com/Rekin226/aquascope/issues/7
-**Status:** Phase II Complete
+**Status:** Phase IV Complete
 
 ---
 
@@ -138,29 +138,43 @@ Using UMPIRE framework (adapted):
 
 [What you built this week, challenges faced, decisions made]
 
+- Implemented GeoJSON as a third output format for the aquascope collect command. After reading save_records() in aquascope/utils/storage.py, I confirmed the project already had a working, tested export_geojson() helper, so the task was wiring it in rather than writing new serialization. I added a geojson branch to save_records() that delegates to the helper, added geojson to the CLI's --format choices in cli.py, and wrote a routing test. The change came together in three small, atomic commits. The main challenge was environment setup (a PEP 668 "externally-managed-environment" error on my Homebrew Python, solved with a virtual environment) rather than the code itself.
+
 ### Week [Y] Progress
 
-[Continue documenting as you work]
+- Verified and submitted. All three CI checks passed locally (ruff, full pytest, scoped mypy). I confirmed the feature end-to-end with manual runs, then rebased on the latest upstream and opened the PR. The PR was reviewed and merged by the maintainer.
+
 
 ### Code Changes
 
-- **Files modified:** [List]
-- **Key commits:** [Links to important commits]
-- **Approach decisions:** [Why you chose certain approaches]
+- **Files modified:** 
+  1. aquascope/utils/storage.py - added a geojson branch to save_records() delegating to export_geojson(); updated the fmt docstring.
+  2. aquascope/cli.py - added geojson to the collect subparser's --format choices (also surfaces it in --help).
+  3. tests/test_utils/test_export_formats.py - added test_save_records_geojson.
+
+- **Key commits:** 
+  1. Commit ['96deee6'](https://github.com/safiashaik04/aquascope/commit/96deee6edf2f53465f64a0e738f03721b122a19b) - Route geojson format to export_geojson in save_records
+  2. Commit ['89782e5'](https://github.com/safiashaik04/aquascope/commit/89782e5becabe3ecd4601d7b1eec00e2396924dd) - Add geojson to collect --format choices
+  3. Commit ['afbcefa'](https://github.com/safiashaik04/aquascope/commit/afbcefaeb552343f71fbb145153c99fec6a30d65) - Add test to save_records with geojson format
+
+- **Approach decisions:** 
+  - Reused the existing export_geojson() helper instead of writing new GeoJSON logic, the issue and maintainer both explicitly said not to reimplement it.
+  - Let the geojson branch fall through to the shared return filepath rather than returning early, to stay consistent with the existing json/csv branches.
+  - Scoped the new test to the routing only, since the serializer's behavior (including records without a location) was already covered by existing tests.
 
 ---
 
 ## Pull Request
 
-**PR Link:** [GitHub PR URL when submitted]
+**PR Link:** https://github.com/Rekin226/aquascope/pull/64
 
-**PR Description:** [Draft or final PR description - much of the content above can be adapted]
+**PR Description:** Added GeoJSON as a third --format option for aquascope collect by routing save_records(fmt="geojson") to the existing export_geojson() helper and adding geojson to the CLI choices, plus a routing test. Closes #7.
 
 **Maintainer Feedback:**
-- [Date]: [Summary of feedback received]
-- [Date]: [How you addressed it]
+- [June 20, 2026]: The maintainer approved the PR with no requested changes, calling it "a really clean first contribution" and confirming it solved the issue exactly as intended — wiring geojson into the existing `export_geojson()` helper rather than reimplementing serialization, adding it to the `--format` choices, and covering the routing with a focused test. They specifically noted the minimal diff, no new dependencies, and no breaking changes.
+- [June 20, 2026]: They highlighted two things they appreciated: that I noticed `save_records()` builds the filename from `fmt` (so the `.geojson` extension falls out naturally, asserted in my test), and that I was transparent about the `"geometry": null` vs skip-record discrepancy in the issue text and kept the existing tested behavior rather than changing the shared helper out of scope. They approved and started CI (held pending first-contributor approval), to be merged once green — closing #7.
 
-**Status:** [Awaiting review / Iterating / Approved / Merged]
+**Status:** Merged
 
 ---
 
@@ -168,20 +182,21 @@ Using UMPIRE framework (adapted):
 
 ### Technical Skills Gained
 
-[What you learned technically]
+Learned the full external open-source contribution workflow end to end: forking, branch management, keeping a branch current with git rebase upstream/main, atomic commits, and pushing with --force-with-lease after a rebase. Got hands-on with the project's CI expectations (ruff, pytest, scoped mypy) and how argparse choices drive both validation and --help text. Also reinforced reading existing code to find the smallest correct change rather than over-engineering.
 
 ### Challenges Overcome
 
-[What was hard and how you solved it]
+The PEP 668 environment error blocked installation until I switched to a virtual environment. During verification, the USGS demo key (the source in the acceptance criteria) returned HTTP 400 from the upstream API; I diagnosed that this failure was in the collector's network fetch, before the output path my change touches, and verified instead with key-free sources (gemstat, openmeteo), then documented the reasoning in the PR.
 
 ### What I'd Do Differently Next Time
 
-[Reflection on your process]
+I'd read the target function and its existing tests first, before drafting the solution plan, since doing so revealed the change was much smaller than I initially assumed (the helper already existed). I'd also commit the test in its own clean commit from the start rather than amending later.
 
 ---
 
 ## Resources Used
 
-- [Link to helpful documentation]
-- [Tutorial or Stack Overflow post that helped]
-- [GitHub issues or discussions that helped]
+- AquaScope CONTRIBUTING.md (style, CI checks, PR guidelines)
+- The project's existing tests/test_utils/test_export_formats.py (test patterns I modeled my test on)
+- Python packaging PEP 668 (understanding the externally-managed-environment error)
+- Issue #7 and the maintainer's comments (scope and implementation pointers)
