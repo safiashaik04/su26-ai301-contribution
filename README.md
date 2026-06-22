@@ -134,13 +134,11 @@ Using UMPIRE framework (adapted):
 
 ## Implementation Notes
 
-### Week [X] Progress
-
-[What you built this week, challenges faced, decisions made]
+### Week 1 Progress
 
 - Implemented GeoJSON as a third output format for the aquascope collect command. After reading save_records() in aquascope/utils/storage.py, I confirmed the project already had a working, tested export_geojson() helper, so the task was wiring it in rather than writing new serialization. I added a geojson branch to save_records() that delegates to the helper, added geojson to the CLI's --format choices in cli.py, and wrote a routing test. The change came together in three small, atomic commits. The main challenge was environment setup (a PEP 668 "externally-managed-environment" error on my Homebrew Python, solved with a virtual environment) rather than the code itself.
 
-### Week [Y] Progress
+### Week 2 Progress
 
 - Verified and submitted. All three CI checks passed locally (ruff, full pytest, scoped mypy). I confirmed the feature end-to-end with manual runs, then rebased on the latest upstream and opened the PR. The PR was reviewed and merged by the maintainer.
 
