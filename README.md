@@ -9,7 +9,7 @@
 
 ## Why I Chose This Issue
 
-I chose the AquaScope --format CLI enhancement (#7) because it fits my background while still pushing me somewhere new. I work mostly in backend and DevOps and Python is one of my strongest languages, so the stack here is a Typer CLI, pandas, and JSON/CSV/GeoJSON. Output is familiar enough that I can get productive fast, and the issue is well scoped: add a --format option and an --output flag, route the output through three format paths, and cover it with tests and docs. 
+I chose the AquaScope --format CLI enhancement (#7) because it fits my background while still pushing me somewhere new. I work mostly in backend and DevOps and Python is one of my strongest languages, so the stack here is a Typer CLI, pandas, and JSON/CSV/GeoJSON. Output is familiar enough that I can get productive fast, and the issue is well scoped: add a --format option and an `--output` flag, route the output through three format paths, and cover it with tests and docs. 
 It also solves a real problem for actual users, researchers who just want their data as a CSV or GeoJSON without writing a script to convert it. Mostly, though, I have little open-source experience, and I want to use this to go through the full contribution loop for the first time like claiming an issue, working with a maintainer, and getting a PR reviewed and merged, while sharpening my testing and edge-case handling along the way.
 
 ---
@@ -26,13 +26,13 @@ Running `aquascope collect --source gemstat --format=geojson` should save the co
 
 ### Current Behavior
 
-Running the command with --format=geojson fails. argparse rejects it with the error invalid choice: 'geojson' (choose from 'json', 'csv'), because geojson was never added as an allowed format. Only json and csv work today.
+Running the command with `--format=geojson` fails. argparse rejects it with the error `invalid choice: 'geojson' (choose from 'json', 'csv')`, because geojson was never added as an allowed format. Only json and csv work today.
 
 ### Affected Components
 
-- aquascope/cli.py defines the --format option and its allowed choices.
-- aquascope/utils/storage.py contains save_records, which decides how data is written for each format.
-- tests/test_utils/test_export_formats.py where the new GeoJSON output tests will go, alongside the existing JSON/CSV format tests.
+- `aquascope/cli.py` defines the --format option and its allowed choices.
+- `aquascope/utils/storage.py` contains save_records, which decides how data is written for each format.
+- `tests/test_utils/test_export_formats.py` where the new GeoJSON output tests will go, alongside the existing JSON/CSV format tests.
 - docs/ the CLI documentation that lists the available formats.
 
 ---
@@ -42,7 +42,7 @@ Running the command with --format=geojson fails. argparse rejects it with the er
 ### Environment Setup
 
 I ran into two issues while setting up the project locally.
-1. When I tried to install with pip, my Mac couldn't find the command, and using python3 -m pip instead gave an externally-managed-environment error. This happens because my Python is managed by Homebrew, which blocks installing packages directly into the system Python. I solved it by creating a virtual environment (python3 -m venv .venv and source .venv/bin/activate) and installing inside it, which is the recommended approach and keeps the project's dependencies isolated.
+1. When I tried to install with `pip`, my Mac couldn't find the command, and using `python3 -m pip` instead gave an externally-managed-environment error. This happens because my Python is managed by Homebrew, which blocks installing packages directly into the system Python. I solved it by creating a virtual environment (`python3 -m venv .venv` and `source .venv/bin/activate`) and installing inside it, which is the recommended approach and keeps the project's dependencies isolated.
 2. Some data sources need API keys to collect data. Since the issue I'm working on is about the output format and not about any one source, I chose sources that are open-access and need no key (such as GEMStat) to reproduce the behavior. This let me focus on the format problem without dealing with key setup.
 
 ### Steps to Reproduce
@@ -107,9 +107,9 @@ Using UMPIRE framework (adapted):
 
 **Implement:** Branch link: https://github.com/safiashaik04/aquascope/tree/fix-issue-geoJSON-format
 
-**Review:** Following CONTRIBUTING.md: I'll work on a feature branch in my fork, add a test for the new functionality, and make sure pytest, ruff check, and mypy all pass. I'll keep commits atomic with clear messages and reference issue #7 in my pull request description.
+**Review:** Following `CONTRIBUTING.md`: I'll work on a feature branch in my fork, add a test for the new functionality, and make sure pytest, ruff check, and mypy all pass. I'll keep commits atomic with clear messages and reference issue #7 in my pull request description.
 
-**Evaluate:** I'll verify the fix by running aquascope collect --source usgs --format geojson and confirming it writes a valid .geojson FeatureCollection. I'll confirm save_records(records, fmt="geojson") returns the written .geojson path, and that aquascope collect --help now lists geojson as a choice. The no-location case ("geometry": null) is already handled and tested by export_geojson, and my new test in test_export_formats.py will cover the save_records routing.
+**Evaluate:** I'll verify the fix by running `aquascope collect --source usgs --format geojson` and confirming it writes a valid `.geojson` FeatureCollection. I'll confirm `save_records(records, fmt="geojson")` returns the written `.geojson` path, and that `aquascope collect --help` now lists geojson as a choice. The no-location case (`"geometry": null`) is already handled and tested by `export_geojson`, and my new test in `test_export_formats.py` will cover the `save_records` routing.
 
 ---
 
@@ -117,18 +117,46 @@ Using UMPIRE framework (adapted):
 
 ### Unit Tests
 
-- [ ] Test case 1: [Description]
-- [ ] Test case 2: [Description]
-- [ ] Test case 3: [Description]
+- [X] Test case 1: `test_save_records_geojson` verifies that `save_records(records, fmt="geojson")` returns a path ending in `.geojson`, that the file is written, and that its contents parse as a valid GeoJSON `FeatureCollection` with the expected number of Point features.
+
+- Note: the GeoJSON serializer itself (`export_geojson`), including its handling of records without a location, was already covered by existing tests in the same file. My new test deliberately focuses only on the new routing layer in `save_records()` to avoid duplicating existing coverage.
+
 
 ### Integration Tests
 
-- [ ] Integration scenario 1
-- [ ] Integration scenario 2
+- [X] Full test suite run (`pytest`) to confirm no regressions: 825 passed, 1 skipped (the skip is an environment-only XGBoost test, unrelated to this change).
+- [X] Lint and type checks matching the project's CI: `ruff check aquascope/ tests/` clean; scoped `mypy aquascope/utils/storage.py` clean.
 
 ### Manual Testing
 
-[What you tested manually and results]
+I exercised the feature end-to-end with key-free data sources:
+
+**1. GEMStat → valid GeoJSON file**
+
+```bash
+aquascope collect --source gemstat --format geojson
+```
+
+Wrote a valid `.geojson` (5000 features), confirmed as `type: FeatureCollection` via a JSON parse check.
+
+**2. Open-Meteo → real Point geometries**
+
+```bash
+aquascope collect --source openmeteo --lat 25.0 --lon 121.5 \
+  --start-date 2026-01-01 --end-date 2026-01-07 --format geojson
+```
+
+Wrote 14 features from coordinate-bearing records, confirming real `Point` geometries flow through.
+
+**3. Help output lists the new format**
+
+```bash
+aquascope collect --help
+```
+
+Confirmed `--format {json,csv,geojson}` now appears, satisfying the "help lists geojson" acceptance criterion.
+
+> **Note:** The acceptance criteria reference `--source usgs`, but the USGS demo key currently returns HTTP 400 from the upstream API. That failure occurs in the collector's network fetch — before the output path this change touches — so it is unrelated to this change. I verified with other sources instead.
 
 ---
 
@@ -136,19 +164,19 @@ Using UMPIRE framework (adapted):
 
 ### Week 1 Progress
 
-- Implemented GeoJSON as a third output format for the aquascope collect command. After reading save_records() in aquascope/utils/storage.py, I confirmed the project already had a working, tested export_geojson() helper, so the task was wiring it in rather than writing new serialization. I added a geojson branch to save_records() that delegates to the helper, added geojson to the CLI's --format choices in cli.py, and wrote a routing test. The change came together in three small, atomic commits. The main challenge was environment setup (a PEP 668 "externally-managed-environment" error on my Homebrew Python, solved with a virtual environment) rather than the code itself.
+- Implemented GeoJSON as a third output format for the `aquascope collect` command. After reading `save_records()` in `aquascope/utils/storage.py`, I confirmed the project already had a working, tested `export_geojson()` helper, so the task was wiring it in rather than writing new serialization. I added a `geojson` branch to `save_records()` that delegates to the helper, added `geojson` to the CLI's `--format` choices in `cli.py`, and wrote a routing test. The change came together in three small, atomic commits. The main challenge was environment setup (a PEP 668 "externally-managed-environment" error on my Homebrew Python, solved with a virtual environment) rather than the code itself.
 
 ### Week 2 Progress
 
-- Verified and submitted. All three CI checks passed locally (ruff, full pytest, scoped mypy). I confirmed the feature end-to-end with manual runs, then rebased on the latest upstream and opened the PR. The PR was reviewed and merged by the maintainer.
+- Verified and submitted. All three CI checks passed locally (`ruff`, full `pytest`, scoped `mypy`). I confirmed the feature end-to-end with manual runs, then rebased on the latest upstream and opened the PR. The PR was reviewed and merged by the maintainer.
 
 
 ### Code Changes
 
 - **Files modified:** 
-  1. aquascope/utils/storage.py - added a geojson branch to save_records() delegating to export_geojson(); updated the fmt docstring.
-  2. aquascope/cli.py - added geojson to the collect subparser's --format choices (also surfaces it in --help).
-  3. tests/test_utils/test_export_formats.py - added test_save_records_geojson.
+  1. `aquascope/utils/storage.py` - added a `geojson` branch to `save_records()` delegating to `export_geojson()`; updated the fmt docstring.
+  2. `aquascope/cli.py` - added `geojson` to the collect subparser's `--format` choices (also surfaces it in `--help`).
+  3. `tests/test_utils/test_export_formats.py` - added `test_save_records_geojson`.
 
 - **Key commits:** 
   1. Commit ['96deee6'](https://github.com/safiashaik04/aquascope/commit/96deee6edf2f53465f64a0e738f03721b122a19b) - Route geojson format to export_geojson in save_records
@@ -156,8 +184,8 @@ Using UMPIRE framework (adapted):
   3. Commit ['afbcefa'](https://github.com/safiashaik04/aquascope/commit/afbcefaeb552343f71fbb145153c99fec6a30d65) - Add test to save_records with geojson format
 
 - **Approach decisions:** 
-  - Reused the existing export_geojson() helper instead of writing new GeoJSON logic, the issue and maintainer both explicitly said not to reimplement it.
-  - Let the geojson branch fall through to the shared return filepath rather than returning early, to stay consistent with the existing json/csv branches.
+  - Reused the existing `export_geojson()` helper instead of writing new GeoJSON logic, the issue and maintainer both explicitly said not to reimplement it.
+  - Let the geojson branch fall through to the shared `return filepath` rather than returning early, to stay consistent with the existing `json`/`csv` branches.
   - Scoped the new test to the routing only, since the serializer's behavior (including records without a location) was already covered by existing tests.
 
 ---
@@ -166,7 +194,7 @@ Using UMPIRE framework (adapted):
 
 **PR Link:** https://github.com/Rekin226/aquascope/pull/64
 
-**PR Description:** Added GeoJSON as a third --format option for aquascope collect by routing save_records(fmt="geojson") to the existing export_geojson() helper and adding geojson to the CLI choices, plus a routing test. Closes #7.
+**PR Description:** Added GeoJSON as a third `--format` option for `aquascope collect` by routing `save_records(fmt="geojson")` to the existing `export_geojson()` helper and adding `geojson` to the CLI choices, plus a routing test. Closes #7.
 
 **Maintainer Feedback:**
 - [June 20, 2026]: The maintainer approved the PR with no requested changes, calling it "a really clean first contribution" and confirming it solved the issue exactly as intended — wiring geojson into the existing `export_geojson()` helper rather than reimplementing serialization, adding it to the `--format` choices, and covering the routing with a focused test. They specifically noted the minimal diff, no new dependencies, and no breaking changes.
@@ -180,11 +208,11 @@ Using UMPIRE framework (adapted):
 
 ### Technical Skills Gained
 
-Learned the full external open-source contribution workflow end to end: forking, branch management, keeping a branch current with git rebase upstream/main, atomic commits, and pushing with --force-with-lease after a rebase. Got hands-on with the project's CI expectations (ruff, pytest, scoped mypy) and how argparse choices drive both validation and --help text. Also reinforced reading existing code to find the smallest correct change rather than over-engineering.
+Learned the full external open-source contribution workflow end to end: forking, branch management, keeping a branch current with `git rebase upstream/main`, atomic commits, and pushing with `--force-with-lease` after a rebase. Got hands-on with the project's CI expectations (`ruff`, `pytest`, scoped `mypy`) and how argparse `choices` drive both validation and `--help` text. Also reinforced reading existing code to find the smallest correct change rather than over-engineering.
 
 ### Challenges Overcome
 
-The PEP 668 environment error blocked installation until I switched to a virtual environment. During verification, the USGS demo key (the source in the acceptance criteria) returned HTTP 400 from the upstream API; I diagnosed that this failure was in the collector's network fetch, before the output path my change touches, and verified instead with key-free sources (gemstat, openmeteo), then documented the reasoning in the PR.
+The PEP 668 environment error blocked installation until I switched to a virtual environment. During verification, the USGS demo key (the source in the acceptance criteria) returned HTTP 400 from the upstream API; I diagnosed that this failure was in the collector's network fetch, before the output path my change touches, and verified instead with key-free sources (`gemstat`, `openmeteo`), then documented the reasoning in the PR.
 
 ### What I'd Do Differently Next Time
 
@@ -194,7 +222,7 @@ I'd read the target function and its existing tests first, before drafting the s
 
 ## Resources Used
 
-- AquaScope CONTRIBUTING.md (style, CI checks, PR guidelines)
-- The project's existing tests/test_utils/test_export_formats.py (test patterns I modeled my test on)
+- AquaScope `CONTRIBUTING.md` (style, CI checks, PR guidelines)
+- The project's existing `tests/test_utils/test_export_formats.py` (test patterns I modeled my test on)
 - Python packaging PEP 668 (understanding the externally-managed-environment error)
 - Issue #7 and the maintainer's comments (scope and implementation pointers)
