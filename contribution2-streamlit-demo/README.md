@@ -63,7 +63,14 @@ Branch Link: https://github.com/safiashaik04/aquascope/tree/feat/streamlit-cloud
 ### Reproduction Evidence
 
 - **Commit showing reproduction:** Comfirmed the gaps exist in local.
-- **Screenshots/logs:** [If applicable]
+- **Screenshots/logs:**
+  <img width="1470" height="956" alt="aquascope dashboard" src="https://github.com/user-attachments/assets/25b3ff94-1d2a-4334-88e7-3ceaeb6e852c" />
+
+  <img width="1470" height="956" alt="analysis" src="https://github.com/user-attachments/assets/ad59d6ce-2928-42c6-946e-187839a2a7c1" />
+
+  <img width="2940" height="1912" alt="analysis eda report" src="https://github.com/user-attachments/assets/091eeeb1-01cb-4f32-b954-775da60da3f9" />
+
+
 - **My findings:** 
 The dashboard itself (`aquascope/dashboard/app.py`) is fully built and already has some good bones for a graceful demo — synthetic "Load demo dataset" buttons that need no network or keys, and a dict (`_API_KEY_SOURCES`) that already flags which of the 15 collectors need a key. But nothing wires it up for actual hosting: there's no `streamlit_app.py` or `requirements.txt` at the repo root for Community Cloud to build from, and the dashboard extra in `pyproject.toml` is missing `matplotlib`/`seaborn`/`folium`, which the plotting pages import unconditionally — so a bare `pip install aquascope[dashboard]` would crash on nearly every visualization page. The bundled `data/camels_benchmark/` sample data (10 real named catchments) is completely unused by the dashboard; every demo button generates fake data on the fly instead. There's also no concept of "hosted vs. local" anywhere in the code, so there was no way for the app to know it should behave differently (auto-load data, hide key-gated features) when running as a public demo versus on someone's own machine.
 
