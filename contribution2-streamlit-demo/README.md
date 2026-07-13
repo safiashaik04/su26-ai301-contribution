@@ -109,6 +109,7 @@ Using UMPIRE framework (adapted):
 **Review:** self-reviewed against `CONTRIBUTING.md` — branched off main rather than committing to it, kept commits atomic per logical change (deploy config / CAMELS wiring / auto-seed / hosted-mode gating), ran `ruff check`, `pytest`, and scoped `mypy` before each commit, will reference the issue number in the PR description.
 
 **Evaluate:** full test suite passes (1005 passed, 1 skipped, no regressions), `ruff check` clean, `mypy` clean apart from 2 pre-existing unrelated findings. Manually smoke-tested both modes locally (`streamlit run streamlit_app.py` normally, and with `?demo=1` to simulate hosted mode) to confirm auto-seeding, the CAMELS picker, and the hidden collectors/LLM tab all behave correctly, while plain local runs are provably unchanged. The two hard-to-reach UI fallback branches in Flow Signatures were verified programmatically by calling the function directly with a stubbed Streamlit object. 
+
 ---
 
 ## Testing Strategy
