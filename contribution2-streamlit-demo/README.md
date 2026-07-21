@@ -3,7 +3,7 @@
 **Contribution Number:** 2 
 **Student:** Safia Shaik 
 **Issue:** https://github.com/Rekin226/aquascope/issues/34
-**Status:** Phase II Complete
+**Status:** Phase III Complete
 
 ---
 
