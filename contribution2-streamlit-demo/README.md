@@ -146,6 +146,7 @@ Sandboxed testing had real limits — no PyPI access and an incompatible pre-bui
 
 - **Files modified:** `streamlit_app.py` (new), `requirements.txt` (new), `aquascope/dashboard/app.py`
 - **Key commits:** 
+
       - `485ea49` — root `requirements.txt` for Community Cloud (.[dashboard,viz])
       - `623b4eb` — root `streamlit_app.py` entry-point shim
       - `33bb94b` — wire bundled CAMELS catchments into Hydrology/Extreme Events/Flow Signatures
