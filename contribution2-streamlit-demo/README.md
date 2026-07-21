@@ -116,18 +116,23 @@ Using UMPIRE framework (adapted):
 
 ### Unit Tests
 
-- [ ] Test case 1: [Description]
-- [ ] Test case 2: [Description]
-- [ ] Test case 3: [Description]
+- No new pytest files were added for this change. aquascope/dashboard/app.py is explicitly excluded from coverage requirements in pyproject.toml (omit = ["aquascope/dashboard/*"]), consistent with the project's existing convention — there were no dashboard tests before this change either. Instead, the new logic was verified with targeted ad hoc scripts against the real functions:
+- [X] `_camels_catchments()` / `_load_camels_streamflow()` — confirmed all 10 bundled catchments load with correct `date/discharge/precipitation` columns and real names.
+- [X] `_is_hosted_demo()` — confirmed it returns `True` only when the Community Cloud path signal is present and no secrets are set (or ?demo=1 is passed), and returns `False` for a plain local run with no secrets, proving local behavior can't regress even though local runs also lack secrets.
+- [X] Flow Signatures' two fallback branches (no date column / too few rows) — triggered directly by calling `_hydro_signatures()` with a stubbed Streamlit object and crafted DataFrames, since these branches are hard to reach by hand through the UI.
 
 ### Integration Tests
 
-- [ ] Integration scenario 1
-- [ ] Integration scenario 2
+- [X] End-to-end: streamlit run streamlit_app.py against the actual requirements.txt in an isolated venv, to approximate what Community Cloud's build step will do.
+- [X] Full page click-through in both modes (see Manual Testing).
 
 ### Manual Testing
 
-[What you tested manually and results]
+Ran the app locally in two modes and compared behavior side by side:
+
+- **Plain local** (`streamlit run streamlit_app.py`, no query param): confirmed every page behaves exactly as before this change — empty states with buttons, full 15-source Data Collection dropdown, full LLM provider picker.
+- **Simulated hosted** (same command, `?demo=1` query param): confirmed Analysis/Visualization/AI Recommender/Alerts land pre-populated with the synthetic water-quality demo set; Hydrology lands pre-populated with a named CAMELS catchment; Extreme Events defaults to the CAMELS catchment picker with zero clicks; Data Collection hides Taiwan MOENV and Copernicus CDS (13 of 15 sources shown); AI Recommender shows a "disabled on this public demo" message instead of the LLM expander.
+- Final manual check still pending: confirming `_is_hosted_demo()` fires correctly on real Streamlit Community Cloud infrastructure once deployed (the local test only simulates it via the query param and can't fully replicate Cloud's actual checkout path).
 
 ---
 
