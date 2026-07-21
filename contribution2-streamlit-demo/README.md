@@ -133,19 +133,29 @@ Using UMPIRE framework (adapted):
 
 ## Implementation Notes
 
-### Week [X] Progress
+### Week 1 Progress
 
-[What you built this week, challenges faced, decisions made]
+Built the full deploy-and-degrade path. Started by validating the issue against the actual repo state before writing anything (confirmed the missing entry point, the `dashboard` extra's missing viz deps, and that the bundled CAMELS data was completely unused). Went back to the maintainer while building for two clarifications rather than guessing: whether CAMELS data should apply to every page (it can't — no water-quality columns) or just the streamflow ones, and what "default to bundled sample data" actually meant (auto-load with no click, not just "no keys required"). Both answers changed the design meaningfully, so raising them early avoided rebuilding later.
 
-### Week [Y] Progress
+The maintainer's suggested hosted-mode detection ("absence of secrets") would have also matched every ordinary local run, since local runs don't have secrets configured either, that would have silently broken local `aquascope dashboard` behavior. Caught this before implementing and added a second signal (Streamlit Community Cloud's distinctive `/mount/src` checkout path) so local runs stay provably unaffected.
 
-[Continue documenting as you work]
+Sandboxed testing had real limits — no PyPI access and an incompatible pre-built `.venv` meant `ruff/mypy/pytest/streamlit` couldn't run directly in the dev sandbox. Worked around it by unit-testing the pure-logic pieces directly in plain Python, and running the actual CONTRIBUTING.md-mandated checks (`ruff`, `pytest`, `mypy`) locally on my own machine instead.
+
 
 ### Code Changes
 
-- **Files modified:** [List]
-- **Key commits:** [Links to important commits]
-- **Approach decisions:** [Why you chose certain approaches]
+- **Files modified:** `streamlit_app.py` (new), `requirements.txt` (new), `aquascope/dashboard/app.py`
+- **Key commits:** 
+      - `485ea49` — root `requirements.txt` for Community Cloud (.[dashboard,viz])
+      - `623b4eb` — root `streamlit_app.py` entry-point shim
+      - `33bb94b` — wire bundled CAMELS catchments into Hydrology/Extreme Events/Flow Signatures
+      - `e4890e0` — auto-seed sample data on hosted mode
+      - `be4acdc` — hide key-gated collectors (Taiwan MOENV, Copernicus) on hosted mode
+      - `c7363fc` — disable LLM-enhanced mode on hosted mode
+- **Approach decisions:** 
+    - Kept the synthetic generators (`_load_demo_data()`, `_load_demo_streamflow()`) as fallbacks rather than deleting them, so the app degrades gracefully even if `data/camels_benchmark/` is ever absent (e.g. a PyPI install without the repo's `data/` directory).
+    - Seeded per page-family rather than globally at app start, since Hydrology's ideal default (a CAMELS basin) and the other pages' ideal default (synthetic water-quality data) can't share one session-state slot.
+    - Only hid the 2 key-gated collectors, not all 15 — the other 13 hit public APIs with no auth and work fine on a hosted instance, so hiding them would have removed a genuinely working feature for no reason.
 
 ---
 
