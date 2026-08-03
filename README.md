@@ -11,6 +11,6 @@ AquaScope collects water-related data from sources like USGS, GEMStat, and UN SD
 | # | Issue | Description | Status |
 |---|-------|-------------|--------|
 | 1 | [#7](https://github.com/Rekin226/aquascope/issues/7) | [Add GeoJSON output format to the collect command](./contribution1-geojson-format/README.md) | ✅ Merged |
-| 2 | [#34](https://github.com/Rekin226/aquascope/issues/34) | [Deploy hosted Streamlit demo with "Try it live" badge](./contribution2-streamlit-demo/README.md) | 🔄 In progress |
+| 2 | [#34](https://github.com/Rekin226/aquascope/issues/34) | [Deploy hosted Streamlit demo with "Try it live" badge](./contribution2-streamlit-demo/README.md) |  🔁 Closed by maintainer (superseded) |
 
-Each folder contains the full contribution log: reproduction process, solution plan, implementation notes, testing strategy, and pull request details.
+Each folder contains the full contribution log: reproduction process, solution plan, implementation notes, testing strategy, and pull request details. Contribution 2's issue was closed by an independent maintainer PR before I could submit. See that folder's README for the full writeup and outcome.
