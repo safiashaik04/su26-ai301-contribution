@@ -3,7 +3,7 @@
 **Contribution Number:** 2 
 **Student:** Safia Shaik 
 **Issue:** https://github.com/Rekin226/aquascope/issues/34
-**Status:** Phase III Complete
+**Status:** Phase Phase IV In Progress — Issue closed by maintainer via independent PR before submission; pivoting to a new issue
 
 ---
 
@@ -12,6 +12,14 @@
 For my second contribution, I wanted to build on a different skill set than my first (which was CLI/backend work). Issue #34 is about deploying an existing Streamlit dashboard to Streamlit Community Cloud, configuring dependencies and making it work gracefully without API keys. That's a strong match for my DevOps/SRE background, where my focus is on infrastructure and deployment rather than application code.
 
 I was also drawn to the impact: it's the top item on the project's roadmap, since a live, no-install demo turns curious visitors into actual users. I'm hoping to come away with hands-on experience deploying a public-facing app end-to-end, from configuration to graceful degradation to the live deploy itself, which speaks directly to the SRE and DevOps roles I'm targeting.
+
+---
+
+## Outcome: Issue Closed Independently by Maintainer
+
+While my branch (`feat/streamlit-cloud-demo`) was ready for review, the maintainer closed #34 by merging their own PR — [#109 "Dashboard 2.0"](https://github.com/Rekin226/aquascope/pull/109) — which they built solo (with Claude Code), not from my branch or PR. It's a full rebuild of the dashboard from the monolith I was patching into a new multipage `views/` architecture, and it satisfies every acceptance criterion from #34: deploy config, no-API-key sample data, a live "Try it live" badge, and the roadmap item ticked. They ultimately hosted it via Hugging Face's stlite/WASM static tier rather than Streamlit Community Cloud.
+
+Since the file I modified no longer exists in that form, opening a PR from my branch would conflict with the new architecture (starting with `streamlit_app.py` and `requirements.txt` both already existing at the root, added independently in #109) and would add no functionality not already shipped. Rather than force a redundant PR, I'm documenting the completed work here as evidence of independent problem-solving and pivoting to a new issue, per CodePath's guidance.
 
 ---
 
@@ -167,36 +175,41 @@ Sandboxed testing had real limits — no PyPI access and an incompatible pre-bui
 
 ## Pull Request
 
-**PR Link:** [GitHub PR URL when submitted]
+**PR Link:** Not submitted — superseded before submission (see Outcome above).
 
-**PR Description:** [Draft or final PR description - much of the content above can be adapted]
+**PR Description:** N/A.
 
 **Maintainer Feedback:**
-- [Date]: [Summary of feedback received]
-- [Date]: [How you addressed it]
+- Issue #34 closed via the maintainer's own PR #109, which independently rebuilt the dashboard and deployed it via Hugging Face static hosting (stlite/WASM), satisfying all of #34's acceptance criteria.
+- Reached out to CodePath support for guidance on a closed-but-claimed issue; advised to ask the maintainer about still submitting, and to start a new issue in parallel rather than wait.
 
-**Status:** [Awaiting review / Iterating / Approved / Merged]
+**Status:** Not submitted — closed by independent maintainer merge. Pivoting to a new issue.
+
 
 ---
 
 ## Learnings & Reflections
 
 ### Technical Skills Gained
-
-[What you learned technically]
+- Deploy-config engineering for Streamlit Community Cloud: entry-point shims, scoping dependency extras for a minimal hosted install.
+- Designing environment-aware code (hosted vs. local detection) without changing existing local behavior including catching a real gap in the maintainer's own suggested detection logic before implementing it, rather than assuming their answer was complete.
+- Handling a real data mismatch (bundled CAMELS data covers streamflow only, not water quality) by scoping the fix to where it actually applied instead of forcing one dataset to cover everything.
+- Verifying Streamlit UI logic without a running server, by stubbing the `st` object and calling page functions directly useful when the dev sandbox couldn't run the real app.
+- Asking targeted clarifying questions before building, instead of guessing at ambiguous instructions.
 
 ### Challenges Overcome
-
-[What was hard and how you solved it]
+- Dev sandbox had no PyPI access and an incompatible `.venv`, so verified logic through direct Python calls with stubbed dependencies, then ran the actual CONTRIBUTING.md-mandated checks (`ruff`, `pytest`, `mypy`, `streamlit run`) locally instead.
+- The real challenge came at the end: the issue was closed by a much larger, independent maintainer PR while my branch was ready, with no window to submit first. Confirmed this by reading the actual merged PR rather than assuming a PR might still land, so I could make a clear-eyed call instead of sinking more time into a branch that wouldn't be merged.
 
 ### What I'd Do Differently Next Time
-
-[Reflection on your process]
+- Open a draft PR earlier, even before every acceptance criterion was fully polished an early draft is a low-cost signal to a maintainer that a claimed issue is actively being worked, which might prompt coordination instead of a maintainer solving it solo.
+- For roadmap-priority issues especially (the ones most likely to draw the maintainer's own attention), check in mid-way rather than only at claim-time and delivery-time.
 
 ---
 
 ## Resources Used
 
-- [Link to helpful documentation]
-- [Tutorial or Stack Overflow post that helped]
-- [GitHub issues or discussions that helped]
+- [Issue #34](https://github.com/Rekin226/aquascope/issues/34)
+- [PR #109 — maintainer's independent solution](https://github.com/Rekin226/aquascope/pull/109)
+- [Streamlit Community Cloud deploy docs](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)
+- `CONTRIBUTING.md` (project's own contribution guidelines)
