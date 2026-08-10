@@ -54,6 +54,10 @@ Setup was simple since this project already had clear instructions. I ran `npm i
 
 - **Commit showing reproduction:** Reproduction was done with a temporary test file (not committed, deleted after confirming the bug) — see screenshot below for the recorded output.
 - **Screenshots/logs:** Screenshot showing the reproduction test output confirming `profileToContext(DEFAULT_PROFILE)` returned `"Name:"` instead of `""`.
+
+<img width="2940" height="1912" alt="Screenshot 2026-08-08 at 6 24 28 PM" src="https://github.com/user-attachments/assets/de13b17e-a88a-484a-b7d7-9dc1675e9d98" />
+
+
 - **My findings:** The bug was exactly as described in the issue. `DEFAULT_PROFILE` (a totally empty profile) produced `"Name:"`, proving the unconditional `Name:` line was the root cause.
 
 ---
