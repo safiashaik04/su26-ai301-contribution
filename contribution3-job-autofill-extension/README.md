@@ -3,7 +3,7 @@
 **Contribution Number:** 3
 **Student:** Safia Shaik
 **Issue:** https://github.com/ritsth/job-autofill-extension/issues/169
-**Status:** Phase IV - Awaiting Merge
+**Status:** Phase IV Complete - Merged
 
 ---
 
@@ -143,7 +143,7 @@ The maintainer approved the core fix and confirmed my tests actually catch the b
 - Aug 8, 2026: The maintainer confirmed `profileToContext` and its tests were correct, and even ran a mutation check locally (reverting my fix) to confirm the tests genuinely catch the bug. They pointed out that `AI_GENERATE_COVER_LETTER` should not be in the guard, since that feature doesn't use AI-generated context, it just fills in a static template, and adding the guard there would have broken a feature that's meant to work with zero setup.
 - Aug 8, 2026: I removed `AI_GENERATE_COVER_LETTER` from the guard, reran lint/typecheck/test/build (all pass), and pushed the fix with a comment confirming the change.
 
-**Status:** Awaiting final merge (all requested changes addressed)
+**Status:** Merged
 
 ---
 
