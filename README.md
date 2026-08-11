@@ -13,6 +13,6 @@ This repository documents my open source contributions made as part of CodePath'
 |---|---------|-------|-------------|--------|
 | 1 | AquaScope | [#7](https://github.com/Rekin226/aquascope/issues/7) | [Add GeoJSON output format to the collect command](./contribution1-geojson-format/README.md) | ✅ Merged |
 | 2 | AquaScope | [#34](https://github.com/Rekin226/aquascope/issues/34) | [Deploy hosted Streamlit demo with "Try it live" badge](./contribution2-streamlit-demo/README.md) | 🔁 Closed by maintainer (superseded) |
-| 3 | job-autofill-extension | [#169](https://github.com/ritsth/job-autofill-extension/issues/169) | [Fix empty profile silently producing a fabricated AI answer](./contribution3-empty-profile-fix/README.md) | 🔄 Awaiting merge |
+| 3 | job-autofill-extension | [#169](https://github.com/ritsth/job-autofill-extension/issues/169) | [Fix empty profile silently producing a fabricated AI answer](./contribution3-empty-profile-fix/README.md) | ✅ Merged |
 
 Each folder contains the full contribution log: reproduction process, solution plan, implementation notes, testing strategy, and pull request details. Contribution 2's issue was closed by an independent maintainer PR before I could submit. See that folder's README for the full writeup and outcome.
